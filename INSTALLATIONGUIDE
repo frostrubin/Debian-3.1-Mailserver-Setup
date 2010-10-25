@@ -1,0 +1,389 @@
+0. Installation von Debian
+
+ Wichtig ist, dass ihr die aktuelle "testing"-Distribution nehmt, 
+ und vor dem Download nochmal auf der Bug-Page schaut, 
+ ob uns ein Fehler betreffen könnte.
+ Bei der Installation legt ihr zuallererst einen normalen user "admin" an, 
+ der später alle Admin-Aufgaben erledigen wird, die "root" aus Sicherheitsgünden 
+ nicht erledigen darf.
+ 
+1. Deutsche Manpages und "vim"
+
+  $ apt-get install manpages-de vim
+
+2. Editieren der "sources.list"
+
+  $ vi /etc/apt/sources.list 
+
+ Folgenden Eintrag hinzufügen: 
+
+  deb http://debiananwenderhandbuch.de/debian/ stable main
+
+3. Installation von diversen Paketen
+
+  $ apt-get install beep bsdgames less ssh screen make automake autoconf binutils 
+                    gcc libc6-dev nmap dahb-html links2 
+
+ "beep" - Einfaches Kommando um Töne zu erzeugen
+ "bsdgames" - Konsolenbasierte Spiele, wie z.B. Tetris und Worms
+ "less" - Vereinfachtes anzeigen von Dateien
+ "ssh" - Verschlüsselte Verbindungen zu anderen Rechnern aufbauen
+ "screen" - Konsolenemulator
+ "make" - Zum Kompilieren
+ "gcc" - Zum Kompilieren
+ "libc6-dev" - Die Lib zum Kompilieren
+ "nmap" - Mächtiges Tool zum Ports konfigurieren
+ "dahb-html" - Das Debiananwenderhandbuch, unter /usr/share/doc/dahb-html/
+ "links2" - Internetfähiger Konsolenbrowser
+
+4. Installation von apache2 und php4
+
+ Jetzt kommt die Installation von apache2 und php4 für das Webinterface imp3:
+ Mit 
+
+  $ apt-get install apache2 libapache2-mod-php4 php4
+ 
+ installiert ihr mit einem Kommando gleich alle nötigen Pakete.
+ apache2 ist der Webserver an sich, libapache2-mod-php4 ist die
+ Verbindung zwischen apache2 und php4 und php4 ist die von imp3 
+ benötigte Script-Sprache.
+ Zur Sicherheit sollte nach der Installation gleich mal der apache2
+ neugestartet werden
+
+  $ /etc/init.d/apache2 restart
+
+ und dann solltet ihr zum Testen mal die IP-Adresse von Donald
+ in einen Browser eintippen und schauen, ob die Testseite erscheint. 
+ Wenn der apache2 problemlos die Testseite ausgibt, wäre es auch 
+ sinnvoll die PHP-Einbindung zu testen. Dazu erstellt ihr einfach eine
+ kurze PHP-Testseite:
+ 
+  $ echo "<?php phpinfo(); ?>" > /var/www/test.php
+
+ Und schaut euch diese dann im Browser unter http://[ip-addr]/test.php
+ an.
+
+5. Installation von postfix
+
+ Die Installation von Postfix sollte problemlos laufen:
+
+  $ apt-get install postfix
+
+ Wichtig ist, dass ihr im Konfigurationsfrontend als Verwendungsart  
+ "Internet Site" wählt. Zum Test könnt ihr euch danach mal 
+ gegenseitig Mail schicken, jeweils an [unix-user]@[domain]. Die Mail
+ sollte dann - wenn man sich mit dem entsprechenden User einloggt - per 
+
+  $ mail
+
+ abrufbar sein.
+
+6. Installation von cyrus-imapd und Einbindung in postfix
+
+ Danach folgt die Installation des imapd. Hierzu braucht einmal den
+ cyrus-imapd an sich und zusätzlich das Packet cyrus-admin zur
+ Verwaltung von Usern:
+ 
+  $ apt-get install cyrus-imapd cyrus-admin
+
+ Danach zuerstmal in der /etc/imapd.conf "root" als Admin-User    
+ definieren. Die entsprechende Zeile sollte dann "admins: root" lauten.
+ Danach müsst ihr noch postfix sagen, dass er seine empfangen Mails 
+ ab sofort an cyrus weiterreichen soll.
+ Dafür braucht ihr zwei Einträge:
+ Einmal müsst ihr postfix sagen, dass es einen cyrus-imapd gibt und wie 
+ er diesen aufrufen soll. Das geschieht durch zwei Zeilen in
+ der /etc/postfix/master.cf. Dort sind schon andere
+ Transportmöglichkeiten definiert, an deren Syntax ihr euch halten
+ könnt. Ihr müsst folgendes eintragen:
+
+  cyrus     unix  -       n       n       -       -       pipe
+    flags=R user=cyrus argv=/usr/sbin/cyrdeliver -e -m ${extension} ${user}
+
+ Zusatzlich müsst ihr postfix noch mitteilen, dass er jetzt unseren
+ Eintrag auch benutzen soll. Dies geschieht durch die Variable
+ mailbox_transport in der /etc/postfix/main.cf:
+
+  mailbox_transport = cyrus
+
+ Damit die Mail nicht nach /dev/null geht, müsst ihr cyrus zusätzlich 
+ noch sagen, wer Mailboxen auf dem System haben soll. 
+ Das geht per cyradm: 
+  
+  $ cyradm localhost
+  localhost userid: root
+  localhost password: 
+  localhost> createmailbox user.david
+  localhost> quit
+
+ Danach sollte dem Empfangen und Senden von Mail mit cyrus und postfix  
+ nichts mehr im Wege stehen und ihr könnt postfix neustarten, damit er
+ die Änderungen übernimmt.
+
+  $ /etc/init.d/postfix restart
+
+7. Installation des mysqld
+
+ Der mysqld dient zum Speichern der Einstellungen von IMP-Usern. 
+
+  $ apt-get install mysql-server php4-mysql
+
+ Wie schon bei dem Paket cyrus-imapd müsst ihr auch bei mysqld einen
+ Admin-User definieren. 
+
+  $ mysqladmin -u root password [euerpasswort]
+
+ Zur Sicherheit wird der mysqld neugestartet:
+
+  $ /etc/init.d/mysql restart
+
+8. Installation von IMP3
+
+ Es sollten jetzt alles für die Installation von IMP3 bereit sein. Diese
+ startet ihr mit 
+
+  $ apt-get install imp3
+
+ Während des Konfigurationsprozesses müsst ihr folgendes auswählen:
+  
+  Database       -> MySQL
+  Hostname       -> localhost
+  Portnumber     -> 3306
+  Administrator  -> root
+  Admin Password -> [Passwort, das ihr mit mysqladmin gesetzt habt]
+  Database Name  -> horde2
+  Database User  -> hordemgr
+  Password User  -> [nüschts eintragen]
+  [es werden nun nochmal die Fragen zum Administrator wiederholt]
+  Administrator  -> root
+  Admin Password -> [Passwort, das ihr mit mysqladmin gesetzt habt]
+
+ Im Idealfall sollte IMP jetzt soweit laufen. Ihr müsst die 
+ PHP-Dateien dazu noch dem Webserver über einen symbolischen Link
+ in /var/www/ zugänglich machen.
+
+  $ ln -s /usr/share/horde2 /var/www/webmail
+
+ Über http://[ip-adresse]/webmail sollte nun IMP3 aufrufbar sein.
+
+9. SMTP-Auth einrichten
+
+ Zuerst ein paar Pakete installieren.
+
+  $ apt-get install libsasl2 libsasl2-modules sasl-bin libsasl7 
+
+ In der /etc/postfix/main.cf einige Einstellungen schreiben :
+
+  smtp_use_tls = yes
+  smtpd_sasl_auth_enable = yes
+  smtpd_sasl_local_domain = 
+  smtpd_sasl_security_options = noanonymous
+  broken_sasl_auth_clients = yes
+  smtpd_recipient_restrictions = permit_sasl_authenticated, reject_unauth_destination
+
+ Postfix liest allerdings auch noch aus der /etc/postfix/sasl/smtpd.conf 
+ Hier müsst ihr eintragen:
+
+  pwcheck_method: saslauthd
+  mech_list: PLAIN LOGIN
+
+ Außerdem muss auch noch die /etc/default/saslauthd geändert werden.
+  
+  START=yes
+  MECHANISMS="shadow"
+
+ Nun noch einige Verzeichnisse und Links für die chroot Umgebung 
+ von Postfix erstellen
+
+  $ mkdir -p /var/spool/postfix/var/run/pwcheck
+  $ chown postfix.root /var/spool/postfix/var/run/pwcheck
+  $ chmod 700 /var/spool/postfix/var/run/pwcheck
+
+  $ cd /var/run
+  $ mv saslauthd/ /var/spool/postfix/var/run
+  $ ln -s /var/spool/postfix/var/run/saslauthd/ saslauthd
+
+  $ adduser postfix sasl 
+  $ /etc/init.d/saslauthd start
+  $ /etc/init.d/postfix restart
+
+ Zuletzt noch ein bisschen Tipparbeit, damit die Ordnernamen "INBOX.*" lauten.
+ In der /var/lib/imp3/servers-debian.conf zwei Variablen ändern.
+
+  "namespace" =>'INBOX.'
+  'folders' => ''
+
+10. Apache 2 mit SSL einrichten
+
+ Um den Apache2 über verschlüsselte Verbindungen erreichbar zu machen (https), 
+ sind noch einige Schritte notwendig. Als erstes wird ein eigenes SSL-Zertifikat 
+ benötigt, welches mit folgendem Befehl erstellt wird:
+
+  $ apache2-ssl-certificate
+
+ Alle Fragen außer "server name" können nach bestem Wissen beantwortet werden,
+ bei dieser Frage muss jedoch der genaue Servername eingegeben werden, 
+ auf den später mittels https zugegriffen werden soll. 
+ Jetzt liegen in /etc/apache2/ssl/ zwei Dateien, wobei eine nur ein Link 
+ auf die andere mit einem zufälligen Dateinamen ist. Beide benötigen wir im Folgenden.
+
+ Das ssl-Modul für den Apache2 muss noch installiert werden, 
+ was mit diesem Befehl geschieht: 
+
+  $ a2enmod ssl
+
+ Als nächstes erstellen wir einen eigenen virtuellen Host für die https-Seiten, 
+ am einfachsten indem der bestehende Default-VHost kopiert und geändert wird:
+
+  $ cp /etc/apache2/sites-available/default /etc/apache2/sites-available/default-ssl
+
+ Dann werden die ersten beiden Zeilen der Datei /etc/apache2/sites-available/default-ssl 
+ (NameVirtualHost *, <VirtualHost *>) durch folgende Zeilen ersetzt, 
+ wobei unter SSLCertificateKeyFile der oben erstellte zufällige Dateiname anzugeben ist 
+ (also ZUFALLSNAME ersetzen):
+
+  NameVirtualHost *:443
+  <VirtualHost *:443>
+  SSLEngine on
+  SSLCertificateFile /etc/apache2/ssl/apache.pem
+  SSLCertificateKeyFile /etc/apache2/ssl/ZUFALLSNAME
+  SSLProtocol all
+  SSLCipherSuite HIGH:MEDIUM
+
+ Dem Apache2 muss noch erklärt werden, dass er neben dem http-Standardport 80 auch auf 
+ den Port 443 (Standard für https) horchen soll. 
+ Dazu in der Datei /etc/apache2/ports.conf folgendes hinzufügen:
+
+  Listen 443
+
+ Danach die neue Standardseite für https aktivieren:
+
+  $ a2ensite default-ssl
+
+ Und zuguterletzt noch den gesamten Rechner neu starten.
+  
+11. Dafür sorgen, dass man beim Web-Frontend direkt in die INBOX gelangt
+
+ In der /etc/imp3/prefs.php die Linie 5 ändern.
+
+  require_once '/usr/share/horde2/imp/lib/constants.php' ;
+
+  $ rm /var/www/webmail
+  $ ln -s /usr/share/horde2/imp /var/www/webmail
+ 
+12. Spam-Mails in den Spam-Ordner verschieben
+
+ Die Universität jagt alle Mails durch einen sehr grobmaschigen Spamfilter. Um das auszunutzen, 
+ verschieben wir alle markierten (also umbenannten) Mails in einen extra Ordner.
+ Das geht mit dem Programm procmail.
+
+  $ apt-get install procmail
+    
+ Nun in der /etc/postfix/main.cf noch was hinzufügen.
+
+  procmail  unix -    n       n     -       -        pipe
+  flags=R user=cyrus argv=/usr/bin/procmail -p USER=${USER}  
+  EXTENSION={extension}  /etc/procmailrc 
+
+ und dann noch in der /etc/postfix/master.cf was ändern.
+
+  mailbox_transport = procmail
+
+  $ vi /etc/procmailrc
+
+ In diese Datei schreibt ihr:
+
+  DELIVERMAIL="/usr/sbin/cyrdeliver"
+  LOGFILE="/var/log/procmail.log"
+  IMAP="$DELIVERMAIL -e -a $USER -m user.$USER"
+  SPAM="$DELIVERMAIL -e -a $USER -m user.$USER.Spam"
+  VERBOSE=on
+
+  :0
+  * ^Subject: \[Spam\?\].*
+  | $SPAM
+
+  :0 w
+  | $IMAP
+
+ Weil es das Logfile noch nicht gibt erstellen wir es schnell.
+
+  $ touch /var/log/procmail.log
+  $ chown mail:mail /var/log/procmail.log
+
+13. Das Verwaltungsscript einbinden.
+
+ Zuerst erstellen wir einen neuen User.
+
+  $ adduser admin
+ 
+ Dann entpacken wir mit
+
+  $ tar xfvj mailadmin.tar.bz2 
+
+ alle Dateien für das Script. Danach verschieben wir sie nach /scripts .
+ Nun machen wir ein Softlink.
+
+  $ ln -s /scripts/mailadmin.sh /home/admin/mailadmin.sh
+ 
+ Dann in die /etc/passwd , die UID und die GID von "admin" auf "0" ändern 
+ und "admin" als Login-Shell die /home/admin/mailadmin.sh geben. 
+
+14. Auslagern von Ordnern
+
+ Zuerst die betreffenden Platten formattieren
+
+  $ cfdisk /dev/hdb
+  $ cfdisk /dev/hdc
+
+ Dann die Partition für /var mounten, die Daten kopieren und
+ die alten Daten löschen.
+ 
+  $ mkdir /mnt/hdb1
+  $ mount -t reiserfs /dev/hdb1 /mnt/hdb1
+  $ cp -a /var/* /mnt/hdb1/
+  $ umount /mnt/hdb1
+  $ cd /
+  $ rm -rf var
+  $ mkdir var
+  $ mount -t reiserfs /dev/hdb1 /var
+
+ Das Gleiche für /var/spool/mail machen
+
+  $ mkdir /mnt/hdb2
+  $ mount -t reiserfs /dev/hdb2 /mnt/hdb2
+  $ cp -a /var/spool/cyrus/* /mnt/hdb2/
+  $ umount /mnt/hdb2
+  $ cd /var/spool/
+  $ rm -rf cyrus
+  $ mkdir cyrus 
+  $ mount -t reiserfs /dev/hdb2 /var/spool/cyrus
+
+ Da wir bisher kein Backup gemacht haben, ist /var/backups leer 
+ und kann direkt in der /etc/fstab zusammen mit den anderen Partitionen 
+ eingetragen werden.
+ 
+  # <file system> <mount point>      <type>    <options>       <rest>
+    /dev/hdb1     /var               reiserfs  defaults         0 0
+    /dev/hdb2     /var/spool/cyrus   reiserfs  defaults         0 0  		        
+    /dev/hdc1	   /var/backups       reiserfs  defaults         0 0
+	
+ Nun noch alle Dateisysteme, die in der /etc/fstab eingetragen sind mounten. 
+
+  $ mount -a
+
+ Zuletzt noch kontrollieren ob alles auch richtig gemountet wurde.
+
+  $ mount
+
+ zeigt eine Liste aller Partitionen an, die gemountet sind.
+
+----
+Gruß
+
+Die Linuxschrauber
+----    
+                        
+                               (o_     
+(o_   (o_   (o_   (o_   (¬_    //\                
+(/)_  (/)_  (/)_  (/)_  (\)_  [ ]/_   Use the source, Tux!  

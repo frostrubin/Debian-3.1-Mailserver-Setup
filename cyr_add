@@ -1,0 +1,50 @@
+#!/usr/bin/cyradm -file
+ 
+set user [lindex $argv 0]
+set quotalimit 15360
+   
+eval cyradm connect cyr_conn localhost 143
+puts stdout "Connected to IMAP server. Authenticating..."
+    
+if [catch {eval cyr_conn authenticate -pwcommand {{
+  set hostname "localhost"
+  set adminid "cyrusadm"
+  set adminpw "7Rier45"
+  list $adminid $adminpw
+}} } result ] {
+  puts stderr "$result (cleartext)"
+  return -code error $result
+ } else {
+  puts "Authentication successful."
+}
+     
+if [catch {cyr_conn createmailbox user.$user} result] {
+  puts stderr $result
+} else {
+  puts "Created mailbox user.$user"
+}
+
+
+if [catch {cyr_conn createmailbox user.$user.Drafts} result] {
+  puts stderr $result
+} else {
+  puts "  Created mailbox user.$user.Drafts"
+}
+
+if [catch {cyr_conn createmailbox user.$user.Sent} result] {
+  puts stderr $result
+} else {
+  puts "  Created mailbox user.$user.Sent"
+}
+
+if [catch {cyr_conn createmailbox user.$user.Spam} result] {
+  puts stderr $result
+} else {
+  puts "  Created mailbox user.$user.Spam"
+}
+
+ if [catch {cyr_conn createmailbox user.$user.Trash} result] {
+  puts stderr $result
+} else {
+  puts "  Created mailbox user.$user.Trash"
+}

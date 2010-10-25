@@ -10,8 +10,8 @@ show_menu()
 { 
   whiptail --menu "Was wollen Sie tun?" 12 69 3 Erstellen	\
   "Neuen Account einrichten" Weiterleitung 			\
-  "Weiterleitung auf andere eMail-Adresse  einrichten" Löschen	\
-  "Account löschen" 2> $FILE || exit
+  "Weiterleitung auf andere eMail-Adresse  einrichten" L√∂schen	\
+  "Account l√∂schen" 2> $FILE || exit
 } 
 
 show_list()
@@ -31,7 +31,7 @@ show_list()
   fi
 
   # Per whiptail die Liste darstellen und den
-  # gewünschten Accountnamen in der Datei choice.$$
+  # gew√ºnschten Accountnamen in der Datei choice.$$
   # speichern
   eval   "whiptail                                 \
          --menu \"Vorhandene Mailaccounts:\"       \
@@ -40,7 +40,7 @@ show_list()
 
 get_nick()
 {
-  whiptail --inputbox "Bitte das Kürzel für den zu erstellenden Account eingeben.  Die Mailadresse ergibt sich aus [kürzel]@schule.de" 12 60 2> $FILE
+  whiptail --inputbox "Bitte das K√ºrzel f√ºr den zu erstellenden Account eingeben.  Die Mailadresse ergibt sich aus [k√ºrzel]@schule.de" 12 60 2> $FILE
 }
 
 get_fullname()
@@ -53,12 +53,12 @@ get_fullname()
 get_forward()
 {
   whiptail --inputbox \
-  "Geben Sie die eMail-Adresse ein, an die eMails für den User $1 weitergeleitet werden sollen:" 12 60 2> $FILE
+  "Geben Sie die eMail-Adresse ein, an die eMails f√ºr den User $1 weitergeleitet werden sollen:" 12 60 2> $FILE
 }
 
 get_ack()
 {
-   whiptail --yesno "Sind Sie sicher, dass für $NAME die eMail-Adresse $NICK@schule.de eingerichtet werden soll?" 12 60
+   whiptail --yesno "Sind Sie sicher, dass f√ºr $NAME die eMail-Adresse $NICK@schule.de eingerichtet werden soll?" 12 60
 }
 
 get_choice()
@@ -76,7 +76,7 @@ do
     NICK=$(get_choice | sed 's/[^a-zA-Z0-9._]//g')
 
     get_fullname || continue
-    NAME=$(get_choice | sed 's/[^a-zA-Z0-9‰ˆ¸ﬂ._ ]//g')
+    NAME=$(get_choice | sed 's/[^a-zA-Z0-9._ ]//g')
 
     get_ack || continue
 
@@ -89,7 +89,7 @@ do
       continue
     fi
 
-    echo "Bitte setzen Sie nun das Passwort für den Mailaccount: "
+    echo "Bitte setzen Sie nun das Passwort f√ºr den Mailaccount: "
     passwd $NICK 
 
     if [ "$?" != "0" ]
@@ -118,14 +118,14 @@ do
 
   ;;
 
-  Löschen)
+  L√∂schen)
 
     show_list || continue
     NICK="$(get_choice | cut -d@ -f1)"
    
-    whiptail --defaultno --yesno "Wollen Sie die Mailbox des Users $NICK wirklich löschen? Dabei werden eMails und sonstige persönliche Dateien _unwiderruflich_ zerstört.\nAbfrage 1 von 3" 12 60 || continue
-    whiptail --defaultno --yesno "Wollen Sie die Mailbox des Users $NICK wirklich löschen? Dabei werden eMails und sonstige persönliche Dateien _unwiderruflich_ zerstört.\nAbfrage 2 von 3" 12 60 || continue
-    whiptail --defaultno --yesno "Wollen Sie die Mailbox des Users $NICK wirklich löschen? Dabei werden eMails und sonstige persönliche Dateien _unwiderruflich_ zerstört.\nAbfrage 3 von 3" 12 60 || continue
+    whiptail --defaultno --yesno "Wollen Sie die Mailbox des Users $NICK wirklich l√∂schen? Dabei werden eMails und sonstige pers√∂nliche Dateien _unwiderruflich_ zerst√∂rt.\nAbfrage 1 von 3" 12 60 || continue
+    whiptail --defaultno --yesno "Wollen Sie die Mailbox des Users $NICK wirklich l√∂schen? Dabei werden eMails und sonstige pers√∂nliche Dateien _unwiderruflich_ zerst√∂rt.\nAbfrage 2 von 3" 12 60 || continue
+    whiptail --defaultno --yesno "Wollen Sie die Mailbox des Users $NICK wirklich l√∂schen? Dabei werden eMails und sonstige pers√∂nliche Dateien _unwiderruflich_ zerst√∂rt.\nAbfrage 3 von 3" 12 60 || continue
 
     deluser --remove-home $NICK
     ./cyr_del $NICK
@@ -136,6 +136,6 @@ done
 
 exit
 
-# Die Datei wieder löschen
+# Die Datei wieder l√∂schen
 rm choice.$$
 

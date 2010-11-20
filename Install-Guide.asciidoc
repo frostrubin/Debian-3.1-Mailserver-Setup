@@ -19,9 +19,7 @@ Sicherheitsgründen nicht erledigen darf.
  
 === Deutsche Manpages und vim
 [source, shell]
-----
 apt-get install manpages-de vim
-----
 
 === Editieren der sources.list
 [source, shell]

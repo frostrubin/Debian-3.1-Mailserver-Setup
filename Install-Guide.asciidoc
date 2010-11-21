@@ -19,13 +19,13 @@ Sicherheitsgründen nicht erledigen darf.
 === Deutsche Manpages und vim
 
 ----
-apt-get install manpages-de vim
+$ apt-get install manpages-de vim
 ----
 
 === Editieren der sources.list
 
 ----
-vi /etc/apt/sources.list 
+$ vi /etc/apt/sources.list 
 ----
 
 Folgenden Eintrag hinzufügen: 
@@ -36,7 +36,7 @@ deb http://debiananwenderhandbuch.de/debian/ stable main
 === Installation von diversen Paketen
 
 ----
-apt-get install beep bsdgames less ssh screen make automake autoconf binutils gcc libc6-dev nmap dahb-html links2 
+$ apt-get install beep bsdgames less ssh screen make automake autoconf binutils gcc libc6-dev nmap dahb-html links2 
 ----
 
 `beep` - Einfaches Kommando um Töne zu erzeugen +
@@ -58,7 +58,7 @@ apt-get install beep bsdgames less ssh screen make automake autoconf binutils gc
 Jetzt kommt die Installation von `apache2` und `php4` für das Webinterface imp3. Mit 
 
 ----
-apt-get install apache2 libapache2-mod-php4 php4
+$ apt-get install apache2 libapache2-mod-php4 php4
 ----
 
 installiert ihr mit einem Kommando gleich alle nötigen Pakete.
@@ -69,7 +69,7 @@ Zur Sicherheit sollte nach der Installation gleich mal
 der `apache2` neugestartet werden
 
 ----
-/etc/init.d/apache2 restart
+$ /etc/init.d/apache2 restart
 ----
 
 Dann solltet ihr zum Testen mal die IP-Adresse von Donald
@@ -79,7 +79,7 @@ sinnvoll die PHP-Einbindung zu testen. Dazu erstellt ihr einfach eine
 kurze PHP-Testseite:
 
 ----
-echo "<?php phpinfo(); ?>" > /var/www/test.php
+$ echo "<?php phpinfo(); ?>" > /var/www/test.php
 ----
 
 und schaut euch diese dann im Browser unter `http://<ip-addr>/test.php` an.
@@ -89,7 +89,7 @@ und schaut euch diese dann im Browser unter `http://<ip-addr>/test.php` an.
 Die Installation von `postfix` sollte problemlos laufen:
 
 ----
-apt-get install postfix
+$ apt-get install postfix
 ----
 
 Wichtig ist, dass ihr im Konfigurationsfrontend als Verwendungsart  
@@ -98,7 +98,7 @@ gegenseitig Mail schicken, jeweils an <unix-user>@<domain>. Die Mail
 sollte dann - wenn man sich mit dem entsprechenden User einloggt - per 
 
 ----
-mail
+$ mail
 ----
 
 abrufbar sein.
@@ -110,7 +110,7 @@ Danach folgt die Installation des `imapd`. Hierzu braucht es einmal den
  Verwaltung von Usern:
 
 ----
-apt-get install cyrus-imapd cyrus-admin
+$ apt-get install cyrus-imapd cyrus-admin
 ----
 
 Danach zuerstmal in der `/etc/imapd.conf` den User `root` als Admin-User    
@@ -142,11 +142,11 @@ noch sagen, wer Mailboxen auf dem System haben soll.
 Das geht per `cyradm`:
  
 ----
-cyradm localhost
-localhost> userid: root
-localhost> password: 
-localhost> createmailbox user.david
-localhost> quit
+$ cyradm localhost
+  localhost> userid: root
+  localhost> password: 
+  localhost> createmailbox user.david
+  localhost> quit
 ----
 
 Danach sollte dem Empfangen und Senden von Mail mit Cyrus und Postfix  
@@ -154,7 +154,7 @@ nichts mehr im Wege stehen und ihr könnt Postfix neustarten, damit er
 die Änderungen übernimmt.
 
 ----
-/etc/init.d/postfix restart
+$ /etc/init.d/postfix restart
 ----
 
 == MySQL, IMAP und SMTP
@@ -163,20 +163,20 @@ die Änderungen übernimmt.
 Der mysqld dient zum Speichern der Einstellungen von IMP-Usern. 
 
 ----
-apt-get install mysql-server php4-mysql
+$ apt-get install mysql-server php4-mysql
 ----
  
 Wie schon bei dem Paket `cyrus-imapd` müsst ihr auch bei `mysqld` einen
 Admin-User definieren. 
 
 ----
-mysqladmin -u root password [euerpasswort]
+$ mysqladmin -u root password <euerpasswort>
 ----
 
 Zur Sicherheit wird der mysqld neugestartet:
 
 ----
-/etc/init.d/mysql restart
+$ /etc/init.d/mysql restart
 ----
 
 === Installation von IMP3
@@ -185,7 +185,7 @@ Es sollten jetzt alles für die Installation von IMP3 bereit sein. Diese
 startet ihr mit 
 
 ----
-apt-get install imp3
+$ apt-get install imp3
 ----
 
 Während des Konfigurationsprozesses müsst ihr folgendes auswählen: +
@@ -206,7 +206,7 @@ PHP-Dateien dazu noch dem Webserver über einen symbolischen Link
 in `/var/www/` zugänglich machen.
 
 ----
-ln -s /usr/share/horde2 /var/www/webmail
+$ ln -s /usr/share/horde2 /var/www/webmail
 ----
 
 Über http://<ip-adresse>/webmail sollte nun IMP3 aufrufbar sein.
@@ -216,7 +216,7 @@ ln -s /usr/share/horde2 /var/www/webmail
 Zuerst ein paar Pakete installieren.
 
 ----
-apt-get install libsasl2 libsasl2-modules sasl-bin libsasl7 
+$ apt-get install libsasl2 libsasl2-modules sasl-bin libsasl7 
 ----
 
 In der `/etc/postfix/main.cf` einige Einstellungen schreiben :
@@ -246,17 +246,17 @@ Nun noch einige Verzeichnisse und Links für die chroot Umgebung
 von Postfix erstellen
 
 ----
-mkdir -p /var/spool/postfix/var/run/pwcheck
-chown postfix.root /var/spool/postfix/var/run/pwcheck
-chmod 700 /var/spool/postfix/var/run/pwcheck
+$ mkdir -p /var/spool/postfix/var/run/pwcheck
+$ chown postfix.root /var/spool/postfix/var/run/pwcheck
+$ chmod 700 /var/spool/postfix/var/run/pwcheck
 
-cd /var/run
-mv saslauthd/ /var/spool/postfix/var/run
-ln -s /var/spool/postfix/var/run/saslauthd/ saslauthd
+$ cd /var/run
+$ mv saslauthd/ /var/spool/postfix/var/run
+$ ln -s /var/spool/postfix/var/run/saslauthd/ saslauthd
 
-adduser postfix sasl 
-/etc/init.d/saslauthd start
-/etc/init.d/postfix restart
+$ adduser postfix sasl 
+$ /etc/init.d/saslauthd start
+$ /etc/init.d/postfix restart
 ----
 
 === Inbox-Name, SSL, Spamfilter und Verwaltung
@@ -274,7 +274,7 @@ sind noch einige Schritte notwendig. Als erstes wird ein eigenes SSL-Zertifikat
 benötigt, welches mit folgendem Befehl erstellt wird:
 
 ----
-apache2-ssl-certificate
+$ apache2-ssl-certificate
 ----
 
 Alle Fragen außer "server name" können nach bestem Wissen beantwortet werden,
@@ -287,14 +287,14 @@ Das ssl-Modul für den Apache2 muss noch installiert werden,
 was mit diesem Befehl geschieht: 
 
 ----
-a2enmod ssl
+$ a2enmod ssl
 ----
 
 Als nächstes erstellen wir einen eigenen virtuellen Host für die https-Seiten;
 am einfachsten indem der bestehende Default-VHost kopiert und geändert wird:
 
 ----
-cp /etc/apache2/sites-available/default /etc/apache2/sites-available/default-ssl
+$ cp /etc/apache2/sites-available/default /etc/apache2/sites-available/default-ssl
 ----
  
 Dann werden die ersten beiden Zeilen der Datei `/etc/apache2/sites-available/default-ssl`
@@ -321,13 +321,13 @@ Listen 443
 Danach die neue Standardseite für https aktivieren:
 
 ----
-a2ensite default-ssl
+$ a2ensite default-ssl
 ----
 
 Und zuguterletzt noch den gesamten Rechner neu starten.
 
 ----
-restart
+$ restart
 ----
 
 === Dafür sorgen, dass man beim Web-Frontend direkt in die INBOX gelangt
@@ -339,8 +339,8 @@ require_once '/usr/share/horde2/imp/lib/constants.php' ;
 
 
 ----
-rm /var/www/webmail
-ln -s /usr/share/horde2/imp /var/www/webmail
+$ rm /var/www/webmail
+$ ln -s /usr/share/horde2/imp /var/www/webmail
 ----
  
 === Spam-Mails in den Spam-Ordner verschieben
@@ -350,7 +350,7 @@ verschieben wir alle markierten (also umbenannten) Mails in einen extra Ordner.
 Das geht mit dem Programm procmail.
 
 ----
-apt-get install procmail
+$ apt-get install procmail
 ----    
 
 Nun in der `/etc/postfix/main.cf` noch was hinzufügen.
@@ -367,7 +367,7 @@ mailbox_transport = procmail
 
 
 ----
-vi /etc/procmailrc
+$ vi /etc/procmailrc
 ----
 
 In diese Datei schreibt ihr:
@@ -389,8 +389,8 @@ VERBOSE=on
 Weil es das Logfile noch nicht gibt erstellen wir es schnell.
 
 ----
-touch /var/log/procmail.log
-chown mail:mail /var/log/procmail.log
+$ touch /var/log/procmail.log
+$ chown mail:mail /var/log/procmail.log
 ----
 
 === Das Verwaltungsscript einbinden.
@@ -398,20 +398,20 @@ chown mail:mail /var/log/procmail.log
 Zuerst erstellen wir einen neuen User.
 
 ----
-adduser admin
+$ adduser admin
 ----
  
 Dann entpacken wir mit
 
 ----
-tar xfvj mailadmin.tar.bz2 
+$ tar xfvj mailadmin.tar.bz2 
 ----
 
 alle Dateien für das Script. Danach verschieben wir sie nach `/scripts`.
 Nun machen wir einen Softlink.
 
 ----
-ln -s /scripts/mailadmin.sh /home/admin/mailadmin.sh
+$ ln -s /scripts/mailadmin.sh /home/admin/mailadmin.sh
 ----
 
 Dann in die `/etc/passwd` , die UID und die GID von "admin" auf "0" ändern 
@@ -422,35 +422,35 @@ und "admin" als Login-Shell die `/home/admin/mailadmin.sh` geben.
 Zuerst die betreffenden Platten formattieren
 
 ----
-cfdisk /dev/hdb
-cfdisk /dev/hdc
+$ cfdisk /dev/hdb
+$ cfdisk /dev/hdc
 ----
  
 Dann die Partition für `/var` mounten, die Daten kopieren und
 die alten Daten löschen.
 
 ----
-mkdir /mnt/hdb1
-mount -t reiserfs /dev/hdb1 /mnt/hdb1
-cp -a /var/* /mnt/hdb1/
-umount /mnt/hdb1
-cd /
-rm -rf var
-mkdir var
-mount -t reiserfs /dev/hdb1 /var
+$ mkdir /mnt/hdb1
+$ mount -t reiserfs /dev/hdb1 /mnt/hdb1
+$ cp -a /var/* /mnt/hdb1/
+$ umount /mnt/hdb1
+$ cd /
+$ rm -rf var
+$ mkdir var
+$ mount -t reiserfs /dev/hdb1 /var
 ----
 
 Das Gleiche für `/var/spool/mail` machen
 
 ----
-mkdir /mnt/hdb2
-mount -t reiserfs /dev/hdb2 /mnt/hdb2
-cp -a /var/spool/cyrus/* /mnt/hdb2/
-umount /mnt/hdb2
-cd /var/spool/
-rm -rf cyrus
-mkdir cyrus 
-mount -t reiserfs /dev/hdb2 /var/spool/cyrus
+$ mkdir /mnt/hdb2
+$ mount -t reiserfs /dev/hdb2 /mnt/hdb2
+$ cp -a /var/spool/cyrus/* /mnt/hdb2/
+$ umount /mnt/hdb2
+$ cd /var/spool/
+$ rm -rf cyrus
+$ mkdir cyrus 
+$ mount -t reiserfs /dev/hdb2 /var/spool/cyrus
 ----
 
 Da wir bisher kein Backup gemacht haben, ist `/var/backups` leer 
@@ -466,13 +466,13 @@ eingetragen werden.
 Nun noch alle Dateisysteme, die in der `/etc/fstab` eingetragen sind mounten. 
 
 ----
-mount -a
+$ mount -a
 ----
 
 Zuletzt noch kontrollieren ob alles auch richtig gemountet wurde.
 
 ----
-mount
+$ mount
 ----
 
 zeigt eine Liste aller Partitionen an, die gemountet sind.

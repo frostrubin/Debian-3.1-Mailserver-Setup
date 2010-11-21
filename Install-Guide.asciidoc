@@ -17,8 +17,7 @@ der später alle Admin-Aufgaben erledigen wird, die "root" aus
 Sicherheitsgründen nicht erledigen darf.
  
 === Deutsche Manpages und vim
-
-[source,shell]
+[source,python]
 -------------------------------
 apt-get install manpages-de vim
 -------------------------------

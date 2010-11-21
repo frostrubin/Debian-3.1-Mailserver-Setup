@@ -17,13 +17,13 @@ der später alle Admin-Aufgaben erledigen wird, die "root" aus
 Sicherheitsgründen nicht erledigen darf.
  
 === Deutsche Manpages und vim
-[source,bash]
--------------------------------
+[source,shell]
+----
 apt-get install manpages-de vim
--------------------------------
+----
 
 === Editieren der sources.list
-[source, shell]
+[source,shell]
 ----
 vi /etc/apt/sources.list 
 ----
@@ -34,7 +34,7 @@ deb http://debiananwenderhandbuch.de/debian/ stable main
 ----
 
 === Installation von diversen Paketen
-[source, shell]
+[source,shell]
 ----
 apt-get install beep bsdgames less ssh screen make automake autoconf binutils gcc libc6-dev nmap dahb-html links2 
 ----
@@ -56,7 +56,7 @@ apt-get install beep bsdgames less ssh screen make automake autoconf binutils gc
 === Installation von apache2 und php4
 
 Jetzt kommt die Installation von `apache2` und `php4` für das Webinterface imp3. Mit 
-[source, shell]
+[source,shell]
 ----
 apt-get install apache2 libapache2-mod-php4 php4
 ----
@@ -67,7 +67,7 @@ ist die Verbindung zwischen `apache2` und `php4` welches
 die von `imp3` benötigte Script-Sprache ist.
 Zur Sicherheit sollte nach der Installation gleich mal 
 der `apache2` neugestartet werden
-[source, shell]
+[source,shell]
 ----
 /etc/init.d/apache2 restart
 ----
@@ -77,7 +77,7 @@ in einen Browser eintippen und schauen, ob die Testseite erscheint.
 Wenn der `apache2` problemlos die Testseite ausgibt, wäre es auch 
 sinnvoll die PHP-Einbindung zu testen. Dazu erstellt ihr einfach eine
 kurze PHP-Testseite:
-[source, shell]
+[source,shell]
 ----
 echo "<?php phpinfo(); ?>" > /var/www/test.php
 ----
@@ -87,7 +87,7 @@ und schaut euch diese dann im Browser unter `http://<ip-addr>/test.php` an.
 === Installation von postfix
 
 Die Installation von `postfix` sollte problemlos laufen:
-[source, shell]
+[source,shell]
 ----
 apt-get install postfix
 ----
@@ -96,7 +96,7 @@ Wichtig ist, dass ihr im Konfigurationsfrontend als Verwendungsart
 "Internet Site" wählt. Zum Test könnt ihr euch danach mal 
 gegenseitig Mail schicken, jeweils an <unix-user>@<domain>. Die Mail
 sollte dann - wenn man sich mit dem entsprechenden User einloggt - per 
-[source, shell]
+[source,shell]
 ----
 mail
 ----
@@ -108,7 +108,7 @@ abrufbar sein.
 Danach folgt die Installation des `imapd`. Hierzu braucht es einmal den
 `cyrus-imapd` an sich und zusätzlich das Packet `cyrus-admin` zur
  Verwaltung von Usern:
-[source, shell]
+[source,shell]
 ----
 apt-get install cyrus-imapd cyrus-admin
 ----
@@ -140,7 +140,7 @@ mailbox_transport = cyrus
 Damit die Mail nicht nach `/dev/null` geht, müsst ihr Cyrus zusätzlich 
 noch sagen, wer Mailboxen auf dem System haben soll. 
 Das geht per `cyradm`:
-[source, shell] 
+[source,shell] 
 ----
 cyradm localhost
 localhost> userid: root
@@ -152,7 +152,7 @@ localhost> quit
 Danach sollte dem Empfangen und Senden von Mail mit Cyrus und Postfix  
 nichts mehr im Wege stehen und ihr könnt Postfix neustarten, damit er
 die Änderungen übernimmt.
-[source, shell]
+[source,shell]
 ----
 /etc/init.d/postfix restart
 ----
@@ -161,20 +161,20 @@ die Änderungen übernimmt.
 === Installation des mysqld
 
 Der mysqld dient zum Speichern der Einstellungen von IMP-Usern. 
-[source, shell]
+[source,shell]
 ----
 apt-get install mysql-server php4-mysql
 ----
  
 Wie schon bei dem Paket `cyrus-imapd` müsst ihr auch bei `mysqld` einen
 Admin-User definieren. 
-[source, shell]
+[source,shell]
 ----
 mysqladmin -u root password [euerpasswort]
 ----
 
 Zur Sicherheit wird der mysqld neugestartet:
-[source, shell]
+[source,shell]
 ----
 /etc/init.d/mysql restart
 ----
@@ -183,7 +183,7 @@ Zur Sicherheit wird der mysqld neugestartet:
 
 Es sollten jetzt alles für die Installation von IMP3 bereit sein. Diese
 startet ihr mit 
-[source, shell]
+[source,shell]
 ----
 apt-get install imp3
 ----
@@ -204,7 +204,7 @@ Admin Password -> <Passwort, das ihr mit mysqladmin gesetzt habt>
 Im Idealfall sollte IMP jetzt soweit laufen. Ihr müsst die 
 PHP-Dateien dazu noch dem Webserver über einen symbolischen Link
 in `/var/www/` zugänglich machen.
-[source, shell]
+[source,shell]
 ----
 ln -s /usr/share/horde2 /var/www/webmail
 ----
@@ -214,7 +214,7 @@ ln -s /usr/share/horde2 /var/www/webmail
 === SMTP-Auth einrichten
 
 Zuerst ein paar Pakete installieren.
-[source, shell]
+[source,shell]
 ----
 apt-get install libsasl2 libsasl2-modules sasl-bin libsasl7 
 ----
@@ -244,7 +244,7 @@ MECHANISMS="shadow"
 
 Nun noch einige Verzeichnisse und Links für die chroot Umgebung 
 von Postfix erstellen
-[source, shell]
+[source,shell]
 ----
 mkdir -p /var/spool/postfix/var/run/pwcheck
 chown postfix.root /var/spool/postfix/var/run/pwcheck
@@ -272,7 +272,7 @@ In der `/var/lib/imp3/servers-debian.conf` zwei Variablen ändern.
 Um den Apache2 über verschlüsselte Verbindungen erreichbar zu machen (https), 
 sind noch einige Schritte notwendig. Als erstes wird ein eigenes SSL-Zertifikat 
 benötigt, welches mit folgendem Befehl erstellt wird:
-[source, shell]
+[source,shell]
 ----
 apache2-ssl-certificate
 ----
@@ -285,14 +285,14 @@ auf die andere mit einem zufälligen Dateinamen ist. Beide benötigen wir im Fol
 
 Das ssl-Modul für den Apache2 muss noch installiert werden, 
 was mit diesem Befehl geschieht: 
-[source, shell]
+[source,shell]
 ----
 a2enmod ssl
 ----
 
 Als nächstes erstellen wir einen eigenen virtuellen Host für die https-Seiten;
 am einfachsten indem der bestehende Default-VHost kopiert und geändert wird:
-[source, shell]
+[source,shell]
 ----
 cp /etc/apache2/sites-available/default /etc/apache2/sites-available/default-ssl
 ----
@@ -319,13 +319,13 @@ Listen 443
 ----
 
 Danach die neue Standardseite für https aktivieren:
-[source, shell]
+[source,shell]
 ----
 a2ensite default-ssl
 ----
 
 Und zuguterletzt noch den gesamten Rechner neu starten.
-[source, shell]
+[source,shell]
 ----
 restart
 ----
@@ -337,7 +337,7 @@ In der `/etc/imp3/prefs.php` die Linie 5 ändern.
 require_once '/usr/share/horde2/imp/lib/constants.php' ;
 ----
 
-[source, shell]
+[source,shell]
 ----
 rm /var/www/webmail
 ln -s /usr/share/horde2/imp /var/www/webmail
@@ -348,7 +348,7 @@ ln -s /usr/share/horde2/imp /var/www/webmail
 Die Universität jagt alle Mails durch einen sehr grobmaschigen Spamfilter. Um das auszunutzen, 
 verschieben wir alle markierten (also umbenannten) Mails in einen extra Ordner.
 Das geht mit dem Programm procmail.
-[source, shell]
+[source,shell]
 ----
 apt-get install procmail
 ----    
@@ -365,7 +365,7 @@ und dann noch in der `/etc/postfix/master.cf` was ändern.
 mailbox_transport = procmail
 ----
 
-[source, shell]
+[source,shell]
 ----
 vi /etc/procmailrc
 ----
@@ -387,7 +387,7 @@ VERBOSE=on
 ----
 
 Weil es das Logfile noch nicht gibt erstellen wir es schnell.
-[source, shell]
+[source,shell]
 ----
 touch /var/log/procmail.log
 chown mail:mail /var/log/procmail.log
@@ -396,20 +396,20 @@ chown mail:mail /var/log/procmail.log
 === Das Verwaltungsscript einbinden.
 
 Zuerst erstellen wir einen neuen User.
-[source, shell]
+[source,shell]
 ----
 adduser admin
 ----
  
 Dann entpacken wir mit
-[source, shell]
+[source,shell]
 ----
 tar xfvj mailadmin.tar.bz2 
 ----
 
 alle Dateien für das Script. Danach verschieben wir sie nach `/scripts`.
 Nun machen wir einen Softlink.
-[source, shell]
+[source,shell]
 ----
 ln -s /scripts/mailadmin.sh /home/admin/mailadmin.sh
 ----
@@ -420,7 +420,7 @@ und "admin" als Login-Shell die `/home/admin/mailadmin.sh` geben.
 === Auslagern von Ordnern
 
 Zuerst die betreffenden Platten formattieren
-[source, shell]
+[source,shell]
 ----
 cfdisk /dev/hdb
 cfdisk /dev/hdc
@@ -428,7 +428,7 @@ cfdisk /dev/hdc
  
 Dann die Partition für `/var` mounten, die Daten kopieren und
 die alten Daten löschen.
-[source, shell]
+[source,shell]
 ----
 mkdir /mnt/hdb1
 mount -t reiserfs /dev/hdb1 /mnt/hdb1
@@ -441,7 +441,7 @@ mount -t reiserfs /dev/hdb1 /var
 ----
 
 Das Gleiche für `/var/spool/mail` machen
-[source, shell]
+[source,shell]
 ----
 mkdir /mnt/hdb2
 mount -t reiserfs /dev/hdb2 /mnt/hdb2
@@ -464,13 +464,13 @@ eingetragen werden.
 ----
 
 Nun noch alle Dateisysteme, die in der `/etc/fstab` eingetragen sind mounten. 
-[source, shell]
+[source,shell]
 ----
 mount -a
 ----
 
 Zuletzt noch kontrollieren ob alles auch richtig gemountet wurde.
-[source, shell]
+[source,shell]
 ----
 mount
 ----
